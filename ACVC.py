@@ -4,7 +4,8 @@ ACVC: central module for the ACVC application
 Alex Berg and Nikki Kyllonen
 '''
 
-#import CorpusBuilder, DecisionMaker
+import CorpusBuilder, DecisionMaker
+import os
 
 # Requires python-dotenv to be installed
 from dotenv import load_dotenv
@@ -28,4 +29,4 @@ if __name__ == "__main__":
     else:
         print("NO .env FILE FOUND.")
 
-#    CorpusBuilder.collect_dictionary_data()
+    CorpusBuilder.collect_dictionary_data()
