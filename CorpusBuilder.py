@@ -23,8 +23,8 @@ def collect_dictionary_data():
     """Driver function to collect and add data to the corpus. Select which words from
        the words list file you would like to include."""
     # Specify which words you want to find the definitions for (inclusive on both ends)
-    start_index = 500
-    end_index = 999
+    start_index = 2000
+    end_index = 2999
 
     # Get words to find the definition of
     words = get_words(DATA_DIRECTORY + WORDS_LIST_FILE_NAME, start_index, end_index)
