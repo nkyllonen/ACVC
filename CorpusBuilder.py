@@ -121,7 +121,3 @@ def clean_definition(definition):
     result = re.sub(r"{[|\w\s]*\}", "", definition)  # remove curly brace info
     result = re.sub(r"[^-\w\s]", "", result)  # remove punctuation (except dashes)
     return result.strip()  # trim whitespace from ends
-
-
-if __name__ == "__main__":
-    collect_dictionary_data()
