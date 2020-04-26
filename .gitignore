@@ -1,6 +1,9 @@
 # PyCharm IDE stuff
 .idea
 
+# VIM stuff
+*.swp
+
 # MacOS cache
 .DS_Store
 

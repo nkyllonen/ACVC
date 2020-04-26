@@ -29,4 +29,19 @@ if __name__ == "__main__":
     else:
         print("NO .env FILE FOUND.")
 
-    CorpusBuilder.collect_dictionary_data()
+    """ User input + Get possible words """
+    prompting = True
+
+    while (prompting):
+        wordLen = int(input("Length of mystery word: "))
+        wordHint = str(input("Hint for mystery word: "))
+
+        possibleWords = DecisionMaker.getPossibleWords(wordLen, wordHint)
+        
+        print("\nPossible words:")
+        for word in possibleWords:
+            print(word)
+
+        prompting = True if str(input("\nContinue? (y/n) ")) == "y" else False
+
+    #CorpusBuilder.collect_dictionary_data()
