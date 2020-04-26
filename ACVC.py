@@ -14,10 +14,11 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 # Global Flags
-DEBUG = True
+#DEBUG = True
+DEBUG = False
 
 if __name__ == "__main__":
-    """ Load local .env file if it exists """
+    # Load local .env file if it exists
     env_path = Path(".") / ".env"
 
     if env_path.exists():
@@ -29,19 +30,20 @@ if __name__ == "__main__":
     else:
         print("NO .env FILE FOUND.")
 
-    """ User input + Get possible words """
+    # Load corpus
+    corpus = CorpusBuilder.load_defs_from_data_file("data/data.json")
+
+    # User input + Get possible words
     prompting = True
 
     while (prompting):
         wordLen = int(input("Length of mystery word: "))
         wordHint = str(input("Hint for mystery word: "))
 
-        possibleWords = DecisionMaker.getPossibleWords(wordLen, wordHint)
+        possibleWords = DecisionMaker.getPossibleWords(corpus, wordLen, wordHint)
         
         print("\nPossible words:")
         for word in possibleWords:
             print(word)
 
         prompting = True if str(input("\nContinue? (y/n) ")) == "y" else False
-
-    #CorpusBuilder.collect_dictionary_data()
