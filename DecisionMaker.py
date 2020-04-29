@@ -14,8 +14,7 @@ engStopWords = set(stopwords.words('english'))
 
 ## HELPER FUNCTIONS ##
 def cleanString(s):
-#    return filter(lambda x : x not in engStopWords, s)
-
+    """ Remove stopwords and all punctuation """
     words = [ w for w in s.split(" ") if w not in engStopWords ]
     s = " ".join(words)
     return "".join( ch.lower() for ch in s if ch not in punc )
