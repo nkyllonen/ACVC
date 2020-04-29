@@ -4,12 +4,20 @@ DecisionMaker: module for deciding potential answers
 Alex Berg and Nikki Kyllonen
 '''
 import string
+import nltk
+from nltk.corpus import stopwords
+nltk.download("stopwords")
 
 ## GLOBAL VARIABLES ##
 punc = set(string.punctuation)
+engStopWords = set(stopwords.words('english'))
 
 ## HELPER FUNCTIONS ##
 def cleanString(s):
+#    return filter(lambda x : x not in engStopWords, s)
+
+    words = [ w for w in s.split(" ") if w not in engStopWords ]
+    s = " ".join(words)
     return "".join( ch.lower() for ch in s if ch not in punc )
 
 ## MODULE FUNCTIONS ##
@@ -19,8 +27,6 @@ def getPossibleWords(corpus, wordLen, wordHint):
 
     for word in list(corpus.keys()):
         if len(word) == wordLen:
-            #print(word , ":" , corpus[word])
-
             maxJaccard = 0
             maxVal = ""
             for val in corpus[word]:

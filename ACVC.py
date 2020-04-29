@@ -14,8 +14,8 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 # Global Flags
-#DEBUG = True
-DEBUG = False
+DEBUG = True
+#DEBUG = False
 
 if __name__ == "__main__":
     # Load local .env file if it exists
@@ -39,6 +39,9 @@ if __name__ == "__main__":
     while (prompting):
         wordLen = int(input("Length of mystery word: "))
         wordHint = str(input("Hint for mystery word: "))
+
+        if DEBUG:
+            print(DecisionMaker.cleanString(wordHint))
 
         possibleWords = DecisionMaker.getPossibleWords(corpus, wordLen, wordHint)
         
