@@ -27,7 +27,7 @@ if __name__ == "__main__":
     if env_path.exists():
         load_dotenv(dotenv_path=env_path)
 
-        if DEBUG:
+        if State.DEBUG:
             print("[DEBUG] MERRIAM_WEBSTER_DICTIONARY_API_KEY:",
                   os.getenv("MERRIAM_WEBSTER_DICTIONARY_API_KEY"))
             print("[DEBUG] MERRIAM_WEBSTER_THESAURUS_API_KEY:",
@@ -36,6 +36,7 @@ if __name__ == "__main__":
         print("NO .env FILE FOUND.")
 
     # Load corpus
+    #CorpusBuilder.setup_keys()
     corpus = CorpusBuilder.load_data_from_data_file("data/definition_data.json")
 
     # User input + Get possible words
