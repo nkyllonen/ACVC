@@ -27,14 +27,16 @@ if __name__ == "__main__":
     if env_path.exists():
         load_dotenv(dotenv_path=env_path)
 
-        if State.DEBUG:
-            print("[DEBUG] MERRIAM_WEBSTER_API_KEY:" ,
-                    os.getenv("MERRIAM_WEBSTER_API_KEY"))
+        if DEBUG:
+            print("[DEBUG] MERRIAM_WEBSTER_DICTIONARY_API_KEY:",
+                  os.getenv("MERRIAM_WEBSTER_DICTIONARY_API_KEY"))
+            print("[DEBUG] MERRIAM_WEBSTER_THESAURUS_API_KEY:",
+                  os.getenv("MERRIAM_WEBSTER_THESAURUS_API_KEY"))
     else:
         print("NO .env FILE FOUND.")
 
     # Load corpus
-    corpus = CorpusBuilder.load_defs_from_data_file("data/data.json")
+    corpus = CorpusBuilder.load_data_from_data_file("data/definition_data.json")
 
     # User input + Get possible words
     prompting = True
