@@ -24,9 +24,9 @@ def cleanString(s):
 def getPossibleWords(corpus, wordLen, wordHint):
     """ Construct list of possible word matches """
 
-    if State.JACCARD:
+    if State.METRIC == State.JACCARD:
         possible = useJaccardMetric(corpus, wordLen, wordHint)
-    elif State.WORD2VEC:
+    elif State.METRIC == State.COSINE:
         possible = [("example", 0.5, "some def")]
 
     # sort and only keep the top 10 possible words

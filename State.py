@@ -3,21 +3,36 @@ State: module for maintaining the program state
 
 Alex Berg and Nikki Kyllonen
 '''
+from enum import Enum
+
+class Metric(Enum):
+    """ Enum for ACVC metrics """
+    JACCARD = 1
+    COSINE = 2
+
+class Corpora(Enum):
+    """ Enum for ACVC corpora """
+    DICT = 1
+    THESA = 2
+    GOLDEN = 3
 
 ## GLOBAL VARIABLES ##
 LABEL = "[ACVC]"
 DEBUG = False
-JACCARD = True
-COSINE = False
-METRIC = "JACCARD"
 
-# Evaluation Variables
+# Metrics
+METRIC = Metric.JACCARD
+
+# Evaluation
 EVAL = False
 SAMPLES = 10
 
+# Corpora
+CORPORA = Corpora.DICT
+
 def processCommands(args):
     """ Set up program according to command line arguments """
-    global DEBUG, JACCARD, WORD2VEC, METRIC, SAMPLES, EVAL
+    global DEBUG, METRIC, SAMPLES, EVAL, CORPORA
     index = 0
 
     for arg in args: 
@@ -25,19 +40,25 @@ def processCommands(args):
             DEBUG = True
             print(LABEL , "USING DEBUG MODE")
         elif(arg == "--jaccard"):
-            JACCARD = True
-            METRIC = "JACCARD"
-            print(LABEL , "USING JACCARD METRIC")
+            METRIC = Metric.JACCARD
         elif(arg == "--cosine"):
-            JACCARD = False
-            COSINE = True
-            METRIC = "COSINE"
-            print(LABEL , "USING COSINE SIMULARITY METRIC")
+            METRIC = Metric.COSINE
         elif(arg == "--eval"):
             EVAL = True
         elif(arg.isnumeric()):
             if index > 0 and args[index-1] == "--eval":
                 SAMPLES = int(arg)
-                print(LABEL , "EVALUATING {0} METRIC USING {1} SAMPLES".format(
-                                METRIC, SAMPLES))
+                print(LABEL , "EVALUATING USING {} SAMPLES".format(SAMPLES))
+        elif(arg == "--dictionary"):
+            CORPORA = CORPORA.DICT
+        elif(arg == "--thesaurus"):
+            CORPORA = CORPORA.THESA
+        elif(arg == "--golden"):
+            CORPORA = CORPORA.GOLDEN
+
         index += 1
+    
+    print(LABEL , "USING {} METRIC".format(METRIC.name))
+    print(LABEL , "USING {} CORPORA".format(CORPORA.name))
+
+
