@@ -45,13 +45,13 @@ def use_jaccard_metric(corpus, wordLen, wordHint):
     for word in list(corpus.keys()):
         if len(word) == wordLen:
             maxJaccard = 0
-            maxVal = ""
+            maxJaccardString = ""
             for val in corpus[word]:
                 m = max(maxJaccard, jaccard(wordHint, val))
                 if (m != maxJaccard):
-                    maxVal = val
+                    maxJaccardString = val
                     maxJaccard = m
-            possible.append((word, maxJaccard, maxVal))
+            possible.append((word, maxJaccard, maxJaccardString))
     return possible
 
 
@@ -71,5 +71,32 @@ def average_sentence_vec(words):
 
 def evaluate_corpus(corpus, golden):
     """ Evaluate the given corpus against given golden standard """
+    withinCorrectWords = []
+    withinIncorrectWords = []
+    withoutNum = 0
 
-    return (0,0)
+    # Randomly sample golden corpus
+    sampleWords = random.sample(golden.keys(), State.SAMPLES)
+    if State.DEBUG:
+        print(State.LABEL , "Using sample words:" , sampleWords)
+
+    for answer in sampleWords:
+        possibleWords = get_possible_words(corpus, len(answer), random.choice(golden[answer]))
+
+        # Check if possible words contains correct answer
+        #if answer in [ possible[0] for possible in possibleWords ]:
+        check = list(filter( lambda x : x[0] == answer , possibleWords ))
+        if len(check) > 0:
+            withinCorrectWords.append(check[0])
+            if State.DEBUG:
+                print(State.LABEL , answer , "CORRECT")
+        else:
+            # Check if answer is in corpus
+            if answer in corpus.keys():
+                withinIncorrectWords.append(answer)
+            else:
+                withoutNum += 1
+            if State.DEBUG:
+                print(State.LABEL, answer , "INCORRECT")
+
+    return (withinCorrectWords, withinIncorrectWords, withoutNum)
