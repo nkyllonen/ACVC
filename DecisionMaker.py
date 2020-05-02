@@ -3,8 +3,9 @@ DecisionMaker: module for deciding potential answers
 
 Alex Berg and Nikki Kyllonen
 '''
-import string
-import nltk
+import State
+import string, nltk
+
 from nltk.corpus import stopwords
 nltk.download("stopwords")
 
@@ -22,8 +23,20 @@ def cleanString(s):
 ## MODULE FUNCTIONS ##
 def getPossibleWords(corpus, wordLen, wordHint):
     """ Construct list of possible word matches """
-    possible = []
 
+    if State.JACCARD:
+        possible = useJaccardMetric(corpus, wordLen, wordHint)
+    elif State.WORD2VEC:
+        possible = [("example", 0.5, "some def")]
+
+    # sort and only keep the top 10 possible words
+    possible = sorted(possible, key = lambda x : x[1], reverse=True)[:10]
+
+    return possible
+
+def useJaccardMetric(corpus, wordLen, wordHint):
+    """ Use brute force with jaccard similarity metric """ 
+    possible = []
     for word in list(corpus.keys()):
         if len(word) == wordLen:
             maxJaccard = 0
@@ -34,10 +47,6 @@ def getPossibleWords(corpus, wordLen, wordHint):
                     maxVal = val
                     maxJaccard = m
             possible.append((word, maxJaccard, maxVal))
-
-    # sort and only keep the top 5 possible words
-    possible = sorted(possible, key = lambda x : x[1], reverse=True)[:10]
-
     return possible
 
 def jaccard(query1, query2):
@@ -46,3 +55,6 @@ def jaccard(query1, query2):
     q2 = set(cleanString(query2).split(" "))
 
     return len(q1.intersection(q2)) / len(q1.union(q2))
+
+def averageSentenceVec(words):
+    return ""

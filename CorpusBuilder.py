@@ -11,8 +11,8 @@ import requests
 
 
 # Merriam Webster API
-DICTIONARY_API_KEY = os.environ["MERRIAM_WEBSTER_DICTIONARY_API_KEY"]
-THESAURUS_API_KEY = os.environ["MERRIAM_WEBSTER_THESAURUS_API_KEY"]
+DICTIONARY_API_KEY = "" 
+THESAURUS_API_KEY = ""
 DICTIONARY_BASE_URL = "https://www.dictionaryapi.com/api/v3/references/collegiate/json/"
 THESAURUS_BASE_URL = "https://www.dictionaryapi.com/api/v3/references/thesaurus/json/"
 
@@ -24,6 +24,12 @@ WORDS_LIST_FILE_NAME = "3000_most_common_words.txt"
 
 
 # Driver functions for getting either definitions or synonyms from the APIs
+def setup_keys():
+    """Driver function to set global API keys."""
+    global DICTIONARY_API_KEY, THESAURUS_API_KEY
+    DICTIONARY_API_KEY = os.environ["MERRIAM_WEBSTER_DICTIONARY_API_KEY"]
+    THESAURUS_API_KEY = os.environ["MERRIAM_WEBSTER_THESAURUS_API_KEY"]
+
 
 def collect_dictionary_data():
     """Driver function to collect and add definitions to the corpus. Select which words from
