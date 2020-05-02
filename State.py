@@ -12,8 +12,8 @@ class Metric(Enum):
 
 class Corpora(Enum):
     """ Enum for ACVC corpora """
-    DICT = 1
-    THESA = 2
+    DICTIONARY = 1
+    THESAURUS = 2
     GOLDEN = 3
 
 ## GLOBAL VARIABLES ##
@@ -28,7 +28,7 @@ EVAL = False
 SAMPLES = 10
 
 # Corpora
-CORPORA = Corpora.DICT
+CORPORA = Corpora.DICTIONARY
 
 def processCommands(args):
     """ Set up program according to command line arguments """
@@ -50,9 +50,9 @@ def processCommands(args):
                 SAMPLES = int(arg)
                 print(LABEL , "EVALUATING USING {} SAMPLES".format(SAMPLES))
         elif(arg == "--dictionary"):
-            CORPORA = CORPORA.DICT
+            CORPORA = CORPORA.DICTIONARY
         elif(arg == "--thesaurus"):
-            CORPORA = CORPORA.THESA
+            CORPORA = CORPORA.THESAURUS
         elif(arg == "--golden"):
             CORPORA = CORPORA.GOLDEN
 

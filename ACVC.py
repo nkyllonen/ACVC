@@ -36,8 +36,13 @@ if __name__ == "__main__":
         print("NO .env FILE FOUND.")
 
     # Load corpus
-    #CorpusBuilder.setup_keys()
-    corpus = CorpusBuilder.load_data_from_data_file("data/definition_data.json")
+    corpus = {}
+    if State.CORPORA == State.CORPORA.DICTIONARY:
+        corpus = CorpusBuilder.load_data_from_data_file("data/definition_data.json")
+    elif State.CORPORA == State.CORPORA.THESAURUS:
+        corpus = CorpusBuilder.load_data_from_data_file("data/synonym_data.json")
+    #if State.CORPORA == State.CORPORA.GOLDEN:
+        #corpus = CorpusBuilder.load_data_from_data_file("data/definition_data.json")
 
     # User input + Get possible words
     if not State.EVAL:
