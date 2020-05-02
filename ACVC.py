@@ -40,21 +40,27 @@ if __name__ == "__main__":
     corpus = CorpusBuilder.load_data_from_data_file("data/definition_data.json")
 
     # User input + Get possible words
-    prompting = True
+    if not State.EVAL:
+        prompting = True
 
-    while (prompting):
-        wordLen = int(input("\nLength of mystery word: "))
-        wordHint = str(input("Hint for mystery word: "))
+        while (prompting):
+            wordLen = int(input("\nLength of mystery word: "))
+            wordHint = str(input("Hint for mystery word: "))
 
-        if State.DEBUG:
-            print("[DEBUG]" , DecisionMaker.cleanString(wordHint))
+            if State.DEBUG:
+                print("[DEBUG]" , DecisionMaker.cleanString(wordHint))
 
-        possibleWords = DecisionMaker.getPossibleWords(corpus, wordLen, wordHint)
-        
-        print("\nPossible words:")
-        for word in possibleWords:
-            # only output non-zero similarity values
-            if word[1] > 0:
-                print(word)
+            possibleWords = DecisionMaker.getPossibleWords(corpus, wordLen, wordHint)
+            
+            print("\nPossible words:")
+            for word in possibleWords:
+                # only output non-zero similarity values
+                if word[1] > 0:
+                    print(word)
 
-        prompting = True if str(input("\nContinue? (y/n) ")) == "y" else False
+            prompting = True if str(input("\nContinue? (y/n) ")) == "y" else False
+
+    # Evaluate
+    else:
+        print("EVALUATION!")
+
