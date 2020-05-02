@@ -3,9 +3,14 @@ ACVC: central module for the ACVC application
 
 Alex Berg and Nikki Kyllonen
 '''
+from __future__ import print_function
 
 import CorpusBuilder, DecisionMaker, State
 import os, sys
+
+from tabulate import tabulate
+
+from terminaltables import AsciiTable
 
 # Requires python-dotenv to be installed
 from dotenv import load_dotenv
@@ -69,5 +74,22 @@ if __name__ == "__main__":
     else:
         golden = CorpusBuilder.load_data_from_data_file(State.GOLDEN_FILE)
         results = DecisionMaker.evaluate_corpus(corpus, golden)
-        print(results)
+        
+        if State.DEBUG:
+            # TODO: format this output with labels and a table?
+            print("[DEBUG]" , results)
+        
+        # Format output into tables
+        WORDS_DATA = (
+            ("Within Correct", "Within Incorrect", "Without Number"),
+            ("\n".join([ val[0] for val in results[0] ]) ,
+             "\n".join(results[1]),
+             results[2])
+        )
+        wordsTable = AsciiTable(WORDS_DATA, "Word Results")
+        print("\n" + wordsTable.table)
+ 
+        results[0].insert(0, ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint"))
+        correctTable = AsciiTable(tuple(results[0]), "Correct Matches Results")
+        print("\n" + correctTable.table)
 

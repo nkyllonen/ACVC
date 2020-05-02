@@ -51,7 +51,7 @@ def use_jaccard_metric(corpus, wordLen, wordHint):
                 if (m != maxJaccard):
                     maxJaccardString = val
                     maxJaccard = m
-            possible.append((word, maxJaccard, maxJaccardString))
+            possible.append((word, maxJaccard, maxJaccardString, wordHint))
     return possible
 
 
@@ -78,7 +78,7 @@ def evaluate_corpus(corpus, golden):
     # Randomly sample golden corpus
     sampleWords = random.sample(golden.keys(), State.SAMPLES)
     if State.DEBUG:
-        print(State.LABEL , "Using sample words:" , sampleWords)
+        print("[DEBUG] Using sample words:" , sampleWords)
 
     for answer in sampleWords:
         possibleWords = get_possible_words(corpus, len(answer), random.choice(golden[answer]))
@@ -89,7 +89,7 @@ def evaluate_corpus(corpus, golden):
         if len(check) > 0:
             withinCorrectWords.append(check[0])
             if State.DEBUG:
-                print(State.LABEL , answer , "CORRECT")
+                print("[DEBUG]" , answer , "CORRECT")
         else:
             # Check if answer is in corpus
             if answer in corpus.keys():
@@ -97,6 +97,6 @@ def evaluate_corpus(corpus, golden):
             else:
                 withoutNum += 1
             if State.DEBUG:
-                print(State.LABEL, answer , "INCORRECT")
+                print("[DEBUG]", answer , "INCORRECT")
 
     return (withinCorrectWords, withinIncorrectWords, withoutNum)
