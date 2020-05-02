@@ -20,14 +20,17 @@ class Corpora(Enum):
 LABEL = "[ACVC]"
 DEBUG = False
 
-# Metrics
+# Default Metrics
 METRIC = Metric.JACCARD
 
-# Evaluation
+# Default Evaluation
 EVAL = False
 SAMPLES = 10
 
-# Corpora
+# Default Corpora
+DICT_FILE = "data/definition_data.json"
+THESA_FILE = "data/synonym_data.json"
+GOLDEN_FILE = "data/answer_clue_data_backup_pretty.json"
 CORPORA = Corpora.DICTIONARY
 
 def processCommands(args):
@@ -35,6 +38,7 @@ def processCommands(args):
     global DEBUG, METRIC, SAMPLES, EVAL, CORPORA
     index = 0
 
+    # Set up current state
     for arg in args: 
         if (arg == "--debug"):
             DEBUG = True
@@ -57,7 +61,8 @@ def processCommands(args):
             CORPORA = CORPORA.GOLDEN
 
         index += 1
-    
+
+    # Output current state
     print(LABEL , "USING {} METRIC".format(METRIC.name))
     print(LABEL , "USING {} CORPORA".format(CORPORA.name))
 

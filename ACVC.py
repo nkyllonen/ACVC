@@ -38,11 +38,11 @@ if __name__ == "__main__":
     # Load corpus
     corpus = {}
     if State.CORPORA == State.CORPORA.DICTIONARY:
-        corpus = CorpusBuilder.load_data_from_data_file("data/definition_data.json")
+        corpus = CorpusBuilder.load_data_from_data_file(State.DICT_FILE)
     elif State.CORPORA == State.CORPORA.THESAURUS:
-        corpus = CorpusBuilder.load_data_from_data_file("data/synonym_data.json")
-    #if State.CORPORA == State.CORPORA.GOLDEN:
-        #corpus = CorpusBuilder.load_data_from_data_file("data/definition_data.json")
+        corpus = CorpusBuilder.load_data_from_data_file(State.THESA_FILE)
+    elif State.CORPORA == State.CORPORA.GOLDEN:
+        corpus = CorpusBuilder.load_data_from_data_file(State.GOLDEN_FILE)
 
     # User input + Get possible words
     if not State.EVAL:
@@ -53,9 +53,9 @@ if __name__ == "__main__":
             wordHint = str(input("Hint for mystery word: "))
 
             if State.DEBUG:
-                print("[DEBUG]" , DecisionMaker.cleanString(wordHint))
+                print("[DEBUG] Cleaned hint:" , DecisionMaker.clean_string(wordHint))
 
-            possibleWords = DecisionMaker.getPossibleWords(corpus, wordLen, wordHint)
+            possibleWords = DecisionMaker.get_possible_words(corpus, wordLen, wordHint)
             
             print("\nPossible words:")
             for word in possibleWords:
@@ -67,5 +67,7 @@ if __name__ == "__main__":
 
     # Evaluate
     else:
-        print("EVALUATION!")
+        golden = CorpusBuilder.load_data_from_data_file(State.GOLDEN_FILE)
+        results = DecisionMaker.evaluate_corpus(corpus, golden)
+        print(results)
 
