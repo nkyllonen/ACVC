@@ -8,6 +8,7 @@ from __future__ import print_function
 import CorpusBuilder, DecisionMaker, State
 import os, sys
 
+from textwrap import wrap
 from terminaltables import AsciiTable
 
 # Requires python-dotenv to be installed
@@ -89,15 +90,34 @@ if __name__ == "__main__":
         print("\n" + wordsTable.table)
  
         distances = 0
-        MATCH_DATA = [("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value", "Jaccard Distance")]
-        for result in results[0]:
+        MATCH_DATA = ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value", "Jaccard Distance")
+        data = []
+        correctTable = AsciiTable([MATCH_DATA, []])
+        maxValWidth = correctTable.column_max_width(2)
+        maxHintWidth = correctTable.column_max_width(3)
+        
+        for i in range(len(results[0])):
+            result = results[0][i]
+
+            # Calculate jaccard distance
             r = list(result)
             d = float(result[4]) - float(result[1])
             distances += d
             r.append(d)
-            MATCH_DATA.append(r)
 
-        correctTable = AsciiTable(tuple(MATCH_DATA), "Correct Matches Results")
+            # Format text to wrap
+            wrappedVal = '\n'.join(wrap(r[2], maxValWidth))
+            wrappedHint = '\n'.join(wrap(r[3], maxHintWidth))
+            r[2] = wrappedVal
+            r[3] = wrappedHint
+
+            if State.DEBUG:
+                print(r)
+
+            data.append(r)
+
+        #correctTable.table_data[0][1] = data
+        correctTable = AsciiTable(tuple([MATCH_DATA] + data), "Correct Matches Results")
         print("\n" + correctTable.table)
 
         if (State.SAMPLES != results[2]):
