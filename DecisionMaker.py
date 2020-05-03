@@ -51,7 +51,8 @@ def use_jaccard_metric(corpus, wordLen, wordHint):
                 if (m != maxJaccard):
                     maxJaccardString = val
                     maxJaccard = m
-            possible.append((word, maxJaccard, maxJaccardString, wordHint))
+            if maxJaccard > 0:
+                possible.append((word, maxJaccard, maxJaccardString, wordHint))
     return possible
 
 

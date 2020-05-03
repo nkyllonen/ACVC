@@ -8,8 +8,6 @@ from __future__ import print_function
 import CorpusBuilder, DecisionMaker, State
 import os, sys
 
-from tabulate import tabulate
-
 from terminaltables import AsciiTable
 
 # Requires python-dotenv to be installed
@@ -62,11 +60,12 @@ if __name__ == "__main__":
 
             possibleWords = DecisionMaker.get_possible_words(corpus, wordLen, wordHint)
             
-            print("\nPossible words:")
-            for word in possibleWords:
-                # only output non-zero similarity values
-                if word[1] > 0:
+            if len(possibleWords) > 0:
+                print("\nPossible words:")
+                for word in possibleWords:
                     print(word)
+            else:
+                print("\nNo possible words found")
 
             prompting = True if str(input("\nContinue? (y/n) ")) == "y" else False
 
@@ -89,17 +88,25 @@ if __name__ == "__main__":
         wordsTable = AsciiTable(WORDS_DATA, "Word Results")
         print("\n" + wordsTable.table)
  
-        MATCH_DATA = results[0].copy()
-        MATCH_DATA.insert(0, ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value"))
+        distances = 0
+        MATCH_DATA = [("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value", "Jaccard Distance")]
+        for result in results[0]:
+            r = list(result)
+            d = float(result[4]) - float(result[1])
+            distances += d
+            r.append(d)
+            MATCH_DATA.append(r)
+
         correctTable = AsciiTable(tuple(MATCH_DATA), "Correct Matches Results")
         print("\n" + correctTable.table)
 
         if (State.SAMPLES != results[2]):
             STATS_DATA = (
-                ("Percentage Within Correct" , "Percentage Within Incorrect", "Percentage Within"),
+                ("Percentage Within Correct" , "Percentage Within Incorrect", "Percentage Within", "Average Jaccard Distance"),
                 (len(results[0]) / (State.SAMPLES - results[2]),
                  len(results[1]) / (State.SAMPLES - results[2]),
-                 1.0 - (results[2] / State.SAMPLES))
+                 1.0 - (results[2] / State.SAMPLES),
+                 distances / len(results[0]) if len(results[0]) > 0 else "NA")
             )
         else:
             STATS_DATA = (
