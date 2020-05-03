@@ -84,12 +84,14 @@ def evaluate_corpus(corpus, golden):
         possibleWords = get_possible_words(corpus, len(answer), random.choice(golden[answer]))
 
         # Check if possible words contains correct answer
-        #if answer in [ possible[0] for possible in possibleWords ]:
         check = list(filter( lambda x : x[0] == answer , possibleWords ))
         if len(check) > 0:
-            withinCorrectWords.append(check[0])
+            # Store corresponding result values + max jaccard of all results
+            result = list(check[0])
+            result.append(possibleWords[0][1])
+            withinCorrectWords.append(result)
             if State.DEBUG:
-                print("[DEBUG]" , answer , "CORRECT")
+                print("[DEBUG]" , answer , "CORRECT" , result)
         else:
             # Check if answer is in corpus
             if answer in corpus.keys():

@@ -89,7 +89,23 @@ if __name__ == "__main__":
         wordsTable = AsciiTable(WORDS_DATA, "Word Results")
         print("\n" + wordsTable.table)
  
-        results[0].insert(0, ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint"))
-        correctTable = AsciiTable(tuple(results[0]), "Correct Matches Results")
+        MATCH_DATA = results[0].copy()
+        MATCH_DATA.insert(0, ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value"))
+        correctTable = AsciiTable(tuple(MATCH_DATA), "Correct Matches Results")
         print("\n" + correctTable.table)
 
+        if (State.SAMPLES != results[2]):
+            STATS_DATA = (
+                ("Percentage Within Correct" , "Percentage Within Incorrect", "Percentage Within"),
+                (len(results[0]) / (State.SAMPLES - results[2]),
+                 len(results[1]) / (State.SAMPLES - results[2]),
+                 1.0 - (results[2] / State.SAMPLES))
+            )
+        else:
+            STATS_DATA = (
+                ("Percentage Within Correct" , "Percentage Within Incorrect", "Percentage Within"),
+                (0,0,0)
+            )
+
+        statsTable = AsciiTable(STATS_DATA, "Statistics")
+        print("\n" + statsTable.table)
