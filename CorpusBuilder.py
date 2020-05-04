@@ -54,8 +54,8 @@ def collect_thesaurus_data():
     """Driver function to collect and add synonyms to the corpus. Select which words from
            the words list file you would like to include."""
     # Specify which words you want to find the synonyms for (inclusive on both ends)
-    start_index = 1000
-    end_index = 1999
+    start_index = 2000
+    end_index = 2999
 
     # Get words to find synonyms for
     words = get_words(DATA_DIRECTORY + WORDS_LIST_FILE_NAME, start_index, end_index)
