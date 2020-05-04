@@ -52,7 +52,7 @@ def use_jaccard_metric(corpus, wordLen, wordHint):
                     maxJaccardString = val
                     maxJaccard = m
             if maxJaccard > 0:
-                possible.append((word, maxJaccard, maxJaccardString, wordHint))
+                possible.append((word, maxJaccard, maxJaccardString))
     return possible
 
 
@@ -82,13 +82,15 @@ def evaluate_corpus(corpus, golden):
         print("[DEBUG] Using sample words:" , sampleWords)
 
     for answer in sampleWords:
-        possibleWords = get_possible_words(corpus, len(answer), random.choice(golden[answer]))
+        clue = random.choice(golden[answer])
+        possibleWords = get_possible_words(corpus, len(answer), clue)
 
         # Check if possible words contains correct answer
         check = list(filter( lambda x : x[0] == answer , possibleWords ))
         if len(check) > 0:
-            # Store corresponding result values + max jaccard of all results
+            # Store corresponding result values + golden hint + max jaccard of all results
             result = list(check[0])
+            result.append(clue)
             result.append(possibleWords[0][1])
             withinCorrectWords.append(result)
             if State.DEBUG:
