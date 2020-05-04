@@ -4,7 +4,7 @@ ACVC: central module for the ACVC application
 Alex Berg and Nikki Kyllonen
 '''
 
-import CorpusBuilder, DecisionMaker, State
+import CorpusBuilder, DecisionMaker, State, GoldStandardBuilder
 import os, sys
 
 # Requires python-dotenv to be installed
@@ -36,6 +36,10 @@ if __name__ == "__main__":
         print("NO .env FILE FOUND.")
 
     # Load corpus
+    if State.BUILD_GOLD:
+        GoldStandardBuilder.build_gold_standard()
+        exit()
+        
     #CorpusBuilder.setup_keys()
     corpus = CorpusBuilder.load_data_from_data_file("data/definition_data.json")
 
