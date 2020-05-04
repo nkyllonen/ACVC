@@ -11,3 +11,7 @@ Alex Berg and Nikki Kyllonen
 
 ## How to Run
 >pipenv run python3.7 ACVC.py
+
+## Package Information
+
+- terminaltables: [Github Repo](https://github.com/Robpol86/terminaltables/blob/master/example3.py)

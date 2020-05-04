@@ -9,6 +9,8 @@ verify_ssl = true
 python-dotenv = "*"
 requests = "*"
 nltk = "*"
+tabulate = "*"
+terminaltables = "*"
 
 [requires]
 python_version = "3.7"
