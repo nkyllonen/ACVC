@@ -29,7 +29,7 @@ def build_gold_standard():
        per letter. Also specify the number of threads to use when getting the answers
        for each clue."""
     clue_letters = "abcdefghijklmnopqrstuvwxyz"  # letters for the start of the clues
-    num_clues_per_letter = 2000  # number of clues to get per letter
+    num_clues_per_letter = 90  # number of clues to get per letter
     num_threads = 16  # num threads to use when getting the answers during each letter (letters are done sequentially)
 
     for letter in clue_letters:
