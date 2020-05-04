@@ -32,10 +32,11 @@ DICT_FILE = "data/definition_data.json"
 THESA_FILE = "data/synonym_data.json"
 GOLDEN_FILE = "data/answer_clue_data_backup_pretty.json"
 CORPORA = Corpora.DICTIONARY
+BUILD_GOLD = False
 
 def processCommands(args):
     """ Set up program according to command line arguments """
-    global DEBUG, METRIC, SAMPLES, EVAL, CORPORA
+    global DEBUG, METRIC, SAMPLES, EVAL, CORPORA, BUILD_GOLD
     index = 0
 
     # Set up current state
@@ -59,11 +60,13 @@ def processCommands(args):
             CORPORA = CORPORA.THESAURUS
         elif(arg == "--golden"):
             CORPORA = CORPORA.GOLDEN
+        elif(arg == "--buildgold"):
+            BUILD_GOLD = True
+            print(LABEL , "ADDING TO GOLDEN STANDARD CORPUS")
 
         index += 1
 
     # Output current state
-    print(LABEL , "USING {} METRIC".format(METRIC.name))
-    print(LABEL , "USING {} CORPORA".format(CORPORA.name))
-
-
+    if not BUILD_GOLD:
+      print(LABEL , "USING {} METRIC".format(METRIC.name))
+      print(LABEL , "USING {} CORPORA".format(CORPORA.name))

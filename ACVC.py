@@ -5,7 +5,7 @@ Alex Berg and Nikki Kyllonen
 '''
 from __future__ import print_function
 
-import CorpusBuilder, DecisionMaker, State
+import CorpusBuilder, DecisionMaker, State, GoldStandardBuilder
 import os, sys
 
 from textwrap import wrap
@@ -40,6 +40,7 @@ if __name__ == "__main__":
         print("NO .env FILE FOUND.")
 
     # Load corpus
+    #CorpusBuilder.setup_keys()  
     corpus = {}
     if State.CORPORA == State.CORPORA.DICTIONARY:
         corpus = CorpusBuilder.load_data_from_data_file(State.DICT_FILE)
@@ -47,7 +48,11 @@ if __name__ == "__main__":
         corpus = CorpusBuilder.load_data_from_data_file(State.THESA_FILE)
     elif State.CORPORA == State.CORPORA.GOLDEN:
         corpus = CorpusBuilder.load_data_from_data_file(State.GOLDEN_FILE)
-
+        
+    if State.BUILD_GOLD:
+        GoldStandardBuilder.build_gold_standard()
+        exit()
+     
     # User input + Get possible words
     if not State.EVAL:
         prompting = True
