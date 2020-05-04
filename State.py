@@ -19,6 +19,8 @@ class Corpora(Enum):
 ## GLOBAL VARIABLES ##
 LABEL = "[ACVC]"
 DEBUG = False
+# TODO: flesh out help menu output
+HELP_MENU = """ Help Menu... """
 
 # Default Metrics
 METRIC = Metric.JACCARD
@@ -26,6 +28,7 @@ METRIC = Metric.JACCARD
 # Default Evaluation
 EVAL = False
 SAMPLES = 10
+LOOPS = 1
 
 # Default Corpora
 DICT_FILE = "data/definition_data.json"
@@ -36,7 +39,7 @@ BUILD_GOLD = False
 
 def processCommands(args):
     """ Set up program according to command line arguments """
-    global DEBUG, METRIC, SAMPLES, EVAL, CORPORA, BUILD_GOLD
+    global DEBUG, METRIC, SAMPLES, LOOPS, EVAL, CORPORA, BUILD_GOLD
     index = 0
 
     # Set up current state
@@ -53,7 +56,8 @@ def processCommands(args):
         elif(arg.isnumeric()):
             if index > 0 and args[index-1] == "--eval":
                 SAMPLES = int(arg)
-                print(LABEL , "EVALUATING USING {} SAMPLES".format(SAMPLES))
+            elif index > 0 and args[index-1].isnumeric():
+                LOOPS = int(arg)
         elif(arg == "--dictionary"):
             CORPORA = CORPORA.DICTIONARY
         elif(arg == "--thesaurus"):
@@ -63,10 +67,15 @@ def processCommands(args):
         elif(arg == "--buildgold"):
             BUILD_GOLD = True
             print(LABEL , "ADDING TO GOLDEN STANDARD CORPUS")
+        elif(arg == "--help"):
+            print(HELP_MENU)
+            exit()
 
         index += 1
 
     # Output current state
     if not BUILD_GOLD:
-      print(LABEL , "USING {} METRIC".format(METRIC.name))
-      print(LABEL , "USING {} CORPORA".format(CORPORA.name))
+        print(LABEL , "USING {} METRIC".format(METRIC.name))
+        print(LABEL , "USING {} CORPORA".format(CORPORA.name))
+        if EVAL:
+            print(LABEL , "EVALUATING USING {0} SAMPLES and {1} LOOPS".format(SAMPLES, LOOPS))
