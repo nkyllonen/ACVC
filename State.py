@@ -20,7 +20,29 @@ class Corpora(Enum):
 LABEL = "[ACVC]"
 DEBUG = False
 # TODO: flesh out help menu output
-HELP_MENU = """ Help Menu... """
+HELP_MENU = """
+    CORPUS OPTIONS:
+    --dictionary
+        generate or evaluate suggestions using the dictionary corpus
+    --thesaurus
+        generate or evaluate suggestions using the thesaurus corpus
+    --golden
+        generate or evaluate suggestions using the golden corpus
+
+    METRIC OPTIONS:
+    --jaccard
+        generate or evaluate suggestions using the jaccard metric
+    --cosine
+        generate or evaluate suggestions using cosine simularity
+
+    EXPANDING GOLDEN CORPUS:
+    --buildgolden
+        will negate any other options given except for --help
+
+    EVALUATION OPTIONS:
+    --eval <opt: number of samples> <opt: number of loops>
+        default to 10 samples and 1 loop when evaluating suggestions
+"""
 
 # Default Metrics
 METRIC = Metric.JACCARD
