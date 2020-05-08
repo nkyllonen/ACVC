@@ -21,6 +21,10 @@ LABEL = "[ACVC]"
 DEBUG = False
 # TODO: flesh out help menu output
 HELP_MENU = """
+    DEBUGGIN:
+    --debug
+        verbose terminal output to help with debugging
+
     CORPUS OPTIONS:
     --dictionary
         generate or evaluate suggestions using the dictionary corpus
@@ -100,4 +104,4 @@ def processCommands(args):
         print(LABEL , "USING {} METRIC".format(METRIC.name))
         print(LABEL , "USING {} CORPORA".format(CORPORA.name))
         if EVAL:
-            print(LABEL , "EVALUATING USING {0} SAMPLES and {1} LOOPS".format(SAMPLES, LOOPS))
+            print(LABEL , "EVALUATING USING {0} SAMPLES and {1} LOOP(S)".format(SAMPLES, LOOPS))

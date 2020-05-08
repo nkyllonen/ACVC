@@ -3,12 +3,16 @@ DecisionMaker: module for deciding potential answers
 
 Alex Berg and Nikki Kyllonen
 '''
+from __future__ import print_function
+
 import State
 import string, nltk, random
 
 from nltk.corpus import stopwords
 nltk.download("stopwords")
 
+from textwrap import wrap
+from terminaltables import AsciiTable
 
 ## GLOBAL VARIABLES ##
 punc = set(string.punctuation)
@@ -103,3 +107,73 @@ def evaluate_corpus(corpus, golden):
                 print("[DEBUG]", answer , "INCORRECT")
 
     return (withinCorrectWords, withinIncorrectWords, withoutNum)
+
+def run_evaluation(corpus, golden):
+    """ Generate tables containing evaluation data """
+    wordsTable, correctTable, statsTable = None, None, None
+
+    results = []
+    
+    for i in range(State.LOOPS):
+        results.append(evaluate_corpus(corpus, golden))
+    
+    if State.DEBUG:
+        # TODO: format this output with labels and a table?
+        print("[DEBUG]" , results)
+    
+    # Only output word result tables if NOT looping --minimize output
+    if State.LOOPS == 1:
+        # Format output into tables
+        WORDS_DATA = (
+            ("Within Correct", "Within Incorrect", "Without Number"),
+            ("\n".join([ val[0] for val in results[0][0] ]) ,
+             "\n".join(results[0][1]),
+             results[0][2])
+        )
+        wordsTable = AsciiTable(WORDS_DATA, "Word Results")
+ 
+        distances = 0
+        MATCH_DATA = ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value", "Jaccard Distance")
+        data = []
+        correctTable = AsciiTable([MATCH_DATA, []])
+        maxValWidth = correctTable.column_max_width(2)
+        maxHintWidth = correctTable.column_max_width(3)
+        
+        for i in range(len(results[0][0])):
+            result = results[0][0][i]
+
+            # Calculate jaccard distance
+            r = list(result)
+            d = float(result[4]) - float(result[1])
+            distances += d
+            r.append(d)
+
+            # Format text to wrap
+            wrappedVal = '\n'.join(wrap(r[2], maxValWidth))
+            wrappedHint = '\n'.join(wrap(r[3], maxHintWidth))
+            r[2] = wrappedVal
+            r[3] = wrappedHint
+
+            if State.DEBUG:
+                print(r)
+
+            data.append(r)
+
+        correctTable = AsciiTable(tuple([MATCH_DATA] + data), "Correct Matches Results")
+
+    if (State.SAMPLES != results[0][2]):
+        STATS_DATA = (
+            ("Average Percentage Within Correct" , "Average Percentage Within Incorrect", "Average Percentage Within", "Average Jaccard Distance"),
+            (len(results[0][0]) / (State.SAMPLES - results[0][2]),
+             len(results[0][1]) / (State.SAMPLES - results[0][2]),
+             1.0 - (results[0][2] / State.SAMPLES),
+             distances / len(results[0][0]) if len(results[0][0]) > 0 else "NA")
+        )
+    else:
+        STATS_DATA = (
+            ("Percentage Within Correct" , "Percentage Within Incorrect", "Percentage Within"),
+            (0,0,0)
+        )
+
+    statsTable = AsciiTable(STATS_DATA, "Statistics")
+    return(wordsTable , correctTable ,  statsTable)

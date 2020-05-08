@@ -3,13 +3,8 @@ ACVC: central module for the ACVC application
 
 Alex Berg and Nikki Kyllonen
 '''
-from __future__ import print_function
-
 import CorpusBuilder, DecisionMaker, State, GoldStandardBuilder
 import os, sys
-
-from textwrap import wrap
-from terminaltables import AsciiTable
 
 # Requires python-dotenv to be installed
 from dotenv import load_dotenv
@@ -78,70 +73,8 @@ if __name__ == "__main__":
     # Evaluate
     else:
         golden = CorpusBuilder.load_data_from_data_file(State.GOLDEN_FILE)
-        results = []
-        
-        for i in range(State.LOOPS):
-            results.append(DecisionMaker.evaluate_corpus(corpus, golden))
-        
-        if State.DEBUG:
-            # TODO: format this output with labels and a table?
-            print("[DEBUG]" , results)
-        
-        # Only output word result tables if NOT looping
-        if State.LOOP == 1:
-            # Format output into tables
-            WORDS_DATA = (
-                ("Within Correct", "Within Incorrect", "Without Number"),
-                ("\n".join([ val[0] for val in results[0] ]) ,
-                 "\n".join(results[1]),
-                 results[2])
-            )
-            wordsTable = AsciiTable(WORDS_DATA, "Word Results")
-            print("\n" + wordsTable.table)
-     
-            distances = 0
-            MATCH_DATA = ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value", "Jaccard Distance")
-            data = []
-            correctTable = AsciiTable([MATCH_DATA, []])
-            maxValWidth = correctTable.column_max_width(2)
-            maxHintWidth = correctTable.column_max_width(3)
-            
-            for i in range(len(results[0])):
-                result = results[0][i]
+        wordsTable, correctTable, statsTable = DecisionMaker.run_evaluation(corpus, golden)
+        print("\n" + wordsTable.table) if wordsTable != None else print()
+        print("\n" + correctTable.table) if correctTable != None else print()
+        print("\n" + statsTable.table) if statsTable != None else print()
 
-                # Calculate jaccard distance
-                r = list(result)
-                d = float(result[4]) - float(result[1])
-                distances += d
-                r.append(d)
-
-                # Format text to wrap
-                wrappedVal = '\n'.join(wrap(r[2], maxValWidth))
-                wrappedHint = '\n'.join(wrap(r[3], maxHintWidth))
-                r[2] = wrappedVal
-                r[3] = wrappedHint
-
-                if State.DEBUG:
-                    print(r)
-
-                data.append(r)
-
-            correctTable = AsciiTable(tuple([MATCH_DATA] + data), "Correct Matches Results")
-            print("\n" + correctTable.table)
-
-        if (State.SAMPLES != results[2]):
-            STATS_DATA = (
-                ("Average Percentage Within Correct" , "Average Percentage Within Incorrect", "Average Percentage Within", "Average Jaccard Distance"),
-                (len(results[0]) / (State.SAMPLES - results[2]),
-                 len(results[1]) / (State.SAMPLES - results[2]),
-                 1.0 - (results[2] / State.SAMPLES),
-                 distances / len(results[0]) if len(results[0]) > 0 else "NA")
-            )
-        else:
-            STATS_DATA = (
-                ("Percentage Within Correct" , "Percentage Within Incorrect", "Percentage Within"),
-                (0,0,0)
-            )
-
-        statsTable = AsciiTable(STATS_DATA, "Statistics")
-        print("\n" + statsTable.table)
