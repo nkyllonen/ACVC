@@ -3,8 +3,12 @@ ACVC: central module for the ACVC application
 
 Alex Berg and Nikki Kyllonen
 '''
+from __future__ import print_function
+
 import CorpusBuilder, DecisionMaker, State, GoldStandardBuilder
 import os, sys
+
+from terminaltables import AsciiTable
 
 # Requires python-dotenv to be installed
 from dotenv import load_dotenv

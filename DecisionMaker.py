@@ -94,6 +94,11 @@ def evaluate_corpus(corpus, golden):
             # Store corresponding result values + max jaccard of all results
             result = list(check[0])
             result.append(possibleWords[0][1])
+
+            # Calculate jaccard distance
+            d = float(possibleWords[0][1]) - float(result[1])
+            result.append(d)
+
             withinCorrectWords.append(result)
             if State.DEBUG:
                 print("[DEBUG]" , answer , "CORRECT" , result)
@@ -132,7 +137,6 @@ def run_evaluation(corpus, golden):
         )
         wordsTable = AsciiTable(WORDS_DATA, "Word Results")
  
-        distances = 0
         MATCH_DATA = ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value", "Jaccard Distance")
         data = []
         correctTable = AsciiTable([MATCH_DATA, []])
@@ -140,13 +144,7 @@ def run_evaluation(corpus, golden):
         maxHintWidth = correctTable.column_max_width(3)
         
         for i in range(len(results[0]["withinCor"])):
-            result = results[0]["withinCor"][i]
-
-            # Calculate jaccard distance
-            r = list(result)
-            d = float(result[4]) - float(result[1])
-            distances += d
-            r.append(d)
+            r = list(results[0]["withinCor"][i])
 
             # Format text to wrap
             wrappedVal = '\n'.join(wrap(r[2], maxValWidth))
@@ -161,21 +159,33 @@ def run_evaluation(corpus, golden):
 
         correctTable = AsciiTable(tuple([MATCH_DATA] + data), "Correct Matches Results")
 
-    # Check if we had any hits at all, otherwise output zeroes
-    if (State.SAMPLES != results[0]["withoutN"]):
-        STATS_DATA = (
-            ("Average Percentage Within Correct" , "Average Percentage Within Incorrect", "Average Percentage Within", "Average Jaccard Distance"),
-            (len(results[0]["withinCor"]) / (State.SAMPLES - results[0]["withoutN"]),
-             len(results[0]["withinIncor"]) / (State.SAMPLES - results[0]["withoutN"]),
-             1.0 - (results[0]["withoutN"] / State.SAMPLES),
-             # Calculate if we had any correct hits --avoid div by zero
-             distances / len(results[0]["withinCor"]) if len(results[0]["withinCor"]) > 0 else "NA")
-        )
-    else:
-        STATS_DATA = (
-            ("Percentage Within Correct" , "Percentage Within Incorrect", "Percentage Within"),
-            (0,0,0)
-        )
+    #distances = 0
+    #for evalResult in results:
+    #    # Check if we had any hits at all, otherwise output zeroes
+    #    if (State.SAMPLES != evalResult["withoutN"]):
+    #        percentCor = len(evalResult["withinCor"]) / (State.SAMPLES - evalResult["withoutN"])
+    #        percentIncor = len(evalResult["withinIncor"]) / (State.SAMPLES - evalResult["withoutN"])
+    #        percentWithin = 1.0 - (evalResult["withoutN"] / State.SAMPLES)
+    #        distances += evalResult["withinCor"][5]
 
-    statsTable = AsciiTable(STATS_DATA, "Statistics")
-    return(wordsTable , correctTable ,  statsTable)
+
+    #    # Check if we had any hits at all, otherwise output zeroes
+    #    if (State.SAMPLES != evalResult["withoutN"]):
+    #        STATS_DATA = (
+    #            ("Average Percentage Within Correct" , "Average Percentage Within Incorrect", "Average Percentage Within", "Average Jaccard Distance"),
+    #            (len(evalResult["withinCor"]) / (State.SAMPLES - evalResult["withoutN"]),
+    #             len(evalResult["withinIncor"]) / (State.SAMPLES - evalResult["withoutN"]),
+    #             1.0 - (evalResult["withoutN"] / State.SAMPLES),
+    #             # Calculate if we had any correct hits --avoid div by zero
+    #             distances / len(evalResult["withinCor"]) if len(evalResult["withinCor"]) > 0 else "NA")
+    #        )
+    #    else:
+    #        STATS_DATA = (
+    #            ("Percentage Within Correct" , "Percentage Within Incorrect", "Percentage Within"),
+    #            (0,0,0)
+    #        )
+
+    #    statsTable = AsciiTable(STATS_DATA, "Statistics")
+    #    print("\n" , statsTable.table)
+    #return(wordsTable , correctTable ,  statsTable)
+    return(wordsTable , correctTable ,  None)
