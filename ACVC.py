@@ -77,8 +77,4 @@ if __name__ == "__main__":
     # Evaluate
     else:
         golden = CorpusBuilder.load_data_from_data_file(State.GOLDEN_FILE)
-        wordsTable, correctTable, statsTable = DecisionMaker.run_evaluation(corpus, golden)
-        print("\n" + wordsTable.table) if wordsTable != None else print()
-        print("\n" + correctTable.table) if correctTable != None else print()
-        print("\n" + statsTable.table) if statsTable != None else print()
-
+        DecisionMaker.run_evaluation(corpus, golden)

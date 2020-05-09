@@ -125,41 +125,10 @@ def run_evaluation(corpus, golden):
     if State.DEBUG:
         # TODO: format this output with labels and a table?
         print("[DEBUG]" , results)
-    
-    # Only output word result tables if NOT looping --minimize output
-    if State.LOOPS == 1:
-        # Format output into tables
-        WORDS_DATA = (
-            ("Within Correct", "Within Incorrect", "Without Number"),
-            ("\n".join([ val[0] for val in results[0]["withinCor"] ]) ,
-             "\n".join(results[0]["withinIncor"]),
-             results[0]["withoutN"])
-        )
-        wordsTable = AsciiTable(WORDS_DATA, "Word Results")
- 
-        MATCH_DATA = ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value", "Jaccard Distance")
-        data = []
-        correctTable = AsciiTable([MATCH_DATA, []])
-        maxValWidth = min(correctTable.column_max_width(2), 50)
-        maxHintWidth = min(correctTable.column_max_width(3), 50)
-        
-        for i in range(len(results[0]["withinCor"])):
-            r = list(results[0]["withinCor"][i])
 
-            # Format text to wrap
-            wrappedVal = '\n'.join(wrap(r[2], maxValWidth))
-            wrappedHint = '\n'.join(wrap(r[3], maxHintWidth))
-            r[2] = wrappedVal
-            r[3] = wrappedHint
-
-            if State.DEBUG:
-                print(r)
-
-            data.append(r)
-
-        correctTable = AsciiTable(tuple([MATCH_DATA] + data), "Correct Matches Results")
-
-    percentCor, percentIncor, percentWithin, distances, totalWithin, totalWithinCor = 0, 0, 0, 0, 0, 0
+    # Initialize counters
+    percentCor, percentIncor, percentWithin = 0, 0, 0
+    distances, totalWithin, totalWithinCor = 0, 0, 0
     for evalResult in results:
         # Format output into tables
         WORDS_DATA = (
@@ -169,7 +138,9 @@ def run_evaluation(corpus, golden):
              evalResult["withoutN"])
         )
         wordsTable = AsciiTable(WORDS_DATA, "Word Results")
-        print("\n" + wordsTable.table)
+        # Only output word result tables if NOT looping --minimize output
+        if State.DEBUG or State.LOOPS == 1:
+            print("\n" + wordsTable.table)
  
         MATCH_DATA = ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value", "Jaccard Distance")
         data = []
@@ -192,7 +163,9 @@ def run_evaluation(corpus, golden):
             data.append(r)
 
         correctTable = AsciiTable(tuple([MATCH_DATA] + data), "Correct Matches Results")
-        print("\n" + correctTable.table)
+        # Only output word result tables if NOT looping --minimize output
+        if State.DEBUG or State.LOOPS == 1:
+            print("\n" + correctTable.table)
 
         # Check if we had any hits at all, otherwise output zeroes
         if (State.SAMPLES != evalResult["withoutN"]):
@@ -219,5 +192,4 @@ def run_evaluation(corpus, golden):
     )
 
     statsTable = AsciiTable(STATS_DATA, "Statistics")
-    return(None, None ,  statsTable)
-    #return(wordsTable , correctTable ,  statsTable)
+    print("\n" + statsTable.table)
