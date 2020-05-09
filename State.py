@@ -19,7 +19,6 @@ class Corpora(Enum):
 ## GLOBAL VARIABLES ##
 LABEL = "[ACVC]"
 DEBUG = False
-# TODO: flesh out help menu output
 HELP_MENU = """
     DEBUGGIN:
     --debug
@@ -65,7 +64,7 @@ BUILD_GOLD = False
 
 def processCommands(args):
     """ Set up program according to command line arguments """
-    global DEBUG, METRIC, SAMPLES, LOOPS, EVAL, CORPORA, BUILD_GOLD
+    global DEBUG, METRIC, SAMPLES, LOOPS, EVAL, CORPORA, BUILD_GOLD, GOLDEN_FILE
     index = 0
 
     # Set up current state
@@ -96,6 +95,9 @@ def processCommands(args):
         elif(arg == "--help"):
             print(HELP_MENU)
             exit()
+        elif(arg == "--works" and CORPORA == Corpora.DICTIONARY):
+            GOLDEN_FILE = "data/answer_clue_data_dict_works.json"
+            print(LABEL, "USING GOLDEN CORPUS CONTAINING DICTIONARY HITS")
 
         index += 1
 

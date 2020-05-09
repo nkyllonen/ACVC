@@ -140,8 +140,8 @@ def run_evaluation(corpus, golden):
         MATCH_DATA = ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value", "Jaccard Distance")
         data = []
         correctTable = AsciiTable([MATCH_DATA, []])
-        maxValWidth = correctTable.column_max_width(2)
-        maxHintWidth = correctTable.column_max_width(3)
+        maxValWidth = min(correctTable.column_max_width(2), 50)
+        maxHintWidth = min(correctTable.column_max_width(3), 50)
         
         for i in range(len(results[0]["withinCor"])):
             r = list(results[0]["withinCor"][i])
@@ -159,33 +159,65 @@ def run_evaluation(corpus, golden):
 
         correctTable = AsciiTable(tuple([MATCH_DATA] + data), "Correct Matches Results")
 
-    #distances = 0
-    #for evalResult in results:
-    #    # Check if we had any hits at all, otherwise output zeroes
-    #    if (State.SAMPLES != evalResult["withoutN"]):
-    #        percentCor = len(evalResult["withinCor"]) / (State.SAMPLES - evalResult["withoutN"])
-    #        percentIncor = len(evalResult["withinIncor"]) / (State.SAMPLES - evalResult["withoutN"])
-    #        percentWithin = 1.0 - (evalResult["withoutN"] / State.SAMPLES)
-    #        distances += evalResult["withinCor"][5]
+    percentCor, percentIncor, percentWithin, distances, totalWithin, totalWithinCor = 0, 0, 0, 0, 0, 0
+    for evalResult in results:
+        # Format output into tables
+        WORDS_DATA = (
+            ("Within Correct", "Within Incorrect", "Without Number"),
+            ("\n".join([ val[0] for val in evalResult["withinCor"] ]) ,
+             "\n".join(evalResult["withinIncor"]),
+             evalResult["withoutN"])
+        )
+        wordsTable = AsciiTable(WORDS_DATA, "Word Results")
+        print("\n" + wordsTable.table)
+ 
+        MATCH_DATA = ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value", "Jaccard Distance")
+        data = []
+        correctTable = AsciiTable([MATCH_DATA, []])
+        maxValWidth = min(correctTable.column_max_width(2), 50)
+        maxHintWidth = min(correctTable.column_max_width(3), 50)
+        
+        for i in range(len(evalResult["withinCor"])):
+            r = list(evalResult["withinCor"][i])
 
+            # Format text to wrap
+            wrappedVal = '\n'.join(wrap(r[2], maxValWidth))
+            wrappedHint = '\n'.join(wrap(r[3], maxHintWidth))
+            r[2] = wrappedVal
+            r[3] = wrappedHint
 
-    #    # Check if we had any hits at all, otherwise output zeroes
-    #    if (State.SAMPLES != evalResult["withoutN"]):
-    #        STATS_DATA = (
-    #            ("Average Percentage Within Correct" , "Average Percentage Within Incorrect", "Average Percentage Within", "Average Jaccard Distance"),
-    #            (len(evalResult["withinCor"]) / (State.SAMPLES - evalResult["withoutN"]),
-    #             len(evalResult["withinIncor"]) / (State.SAMPLES - evalResult["withoutN"]),
-    #             1.0 - (evalResult["withoutN"] / State.SAMPLES),
-    #             # Calculate if we had any correct hits --avoid div by zero
-    #             distances / len(evalResult["withinCor"]) if len(evalResult["withinCor"]) > 0 else "NA")
-    #        )
-    #    else:
-    #        STATS_DATA = (
-    #            ("Percentage Within Correct" , "Percentage Within Incorrect", "Percentage Within"),
-    #            (0,0,0)
-    #        )
+            if State.DEBUG:
+                print(r)
 
-    #    statsTable = AsciiTable(STATS_DATA, "Statistics")
-    #    print("\n" , statsTable.table)
+            data.append(r)
+
+        correctTable = AsciiTable(tuple([MATCH_DATA] + data), "Correct Matches Results")
+        print("\n" + correctTable.table)
+
+        # Check if we had any hits at all, otherwise output zeroes
+        if (State.SAMPLES != evalResult["withoutN"]):
+            withinN = State.SAMPLES - evalResult["withoutN"]
+            withinCor = len(evalResult["withinCor"])
+
+            percentCor += withinCor / withinN 
+            percentIncor += len(evalResult["withinIncor"]) / withinN
+            percentWithin += withinN / State.SAMPLES
+
+            # Sum the distances for each result from this loop to calc overal average
+            for word in evalResult["withinCor"]:
+                distances += word[5]
+            
+            totalWithin += withinN
+            totalWithinCor += withinCor
+
+    STATS_DATA = (
+        ("Average Percentage Within Correct" , "Average Percentage Within Incorrect", "Average Percentage Within", "Average Jaccard Distance"),
+        (percentCor / State.LOOPS,
+         percentIncor / State.LOOPS,
+         percentWithin / State.LOOPS,
+         distances / totalWithinCor if totalWithinCor > 0 else 0.0)
+    )
+
+    statsTable = AsciiTable(STATS_DATA, "Statistics")
+    return(None, None ,  statsTable)
     #return(wordsTable , correctTable ,  statsTable)
-    return(wordsTable , correctTable ,  None)
