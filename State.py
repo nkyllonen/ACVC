@@ -19,6 +19,33 @@ class Corpora(Enum):
 ## GLOBAL VARIABLES ##
 LABEL = "[ACVC]"
 DEBUG = False
+HELP_MENU = """
+    DEBUGGIN:
+    --debug
+        verbose terminal output to help with debugging
+
+    CORPUS OPTIONS:
+    --dictionary
+        generate or evaluate suggestions using the dictionary corpus
+    --thesaurus
+        generate or evaluate suggestions using the thesaurus corpus
+    --golden
+        generate or evaluate suggestions using the golden corpus
+
+    METRIC OPTIONS:
+    --jaccard
+        generate or evaluate suggestions using the jaccard metric
+    --cosine
+        generate or evaluate suggestions using cosine simularity
+
+    EXPANDING GOLDEN CORPUS:
+    --buildgolden
+        will negate any other options given except for --help
+
+    EVALUATION OPTIONS:
+    --eval <opt: number of samples> <opt: number of loops>
+        default to 10 samples and 1 loop when evaluating suggestions
+"""
 
 # Default Metrics
 METRIC = Metric.JACCARD
@@ -26,6 +53,7 @@ METRIC = Metric.JACCARD
 # Default Evaluation
 EVAL = False
 SAMPLES = 10
+LOOPS = 1
 
 # Default Corpora
 DICT_FILE = "data/definition_data.json"
@@ -36,7 +64,7 @@ BUILD_GOLD = False
 
 def processCommands(args):
     """ Set up program according to command line arguments """
-    global DEBUG, METRIC, SAMPLES, EVAL, CORPORA, BUILD_GOLD
+    global DEBUG, METRIC, SAMPLES, LOOPS, EVAL, CORPORA, BUILD_GOLD, GOLDEN_FILE
     index = 0
 
     # Set up current state
@@ -53,7 +81,8 @@ def processCommands(args):
         elif(arg.isnumeric()):
             if index > 0 and args[index-1] == "--eval":
                 SAMPLES = int(arg)
-                print(LABEL , "EVALUATING USING {} SAMPLES".format(SAMPLES))
+            elif index > 0 and args[index-1].isnumeric():
+                LOOPS = int(arg)
         elif(arg == "--dictionary"):
             CORPORA = CORPORA.DICTIONARY
         elif(arg == "--thesaurus"):
@@ -63,10 +92,18 @@ def processCommands(args):
         elif(arg == "--buildgold"):
             BUILD_GOLD = True
             print(LABEL , "ADDING TO GOLDEN STANDARD CORPUS")
+        elif(arg == "--help"):
+            print(HELP_MENU)
+            exit()
+        elif(arg == "--works" and CORPORA == Corpora.DICTIONARY):
+            GOLDEN_FILE = "data/answer_clue_data_dict_works.json"
+            print(LABEL, "USING GOLDEN CORPUS CONTAINING DICTIONARY HITS")
 
         index += 1
 
     # Output current state
     if not BUILD_GOLD:
-      print(LABEL , "USING {} METRIC".format(METRIC.name))
-      print(LABEL , "USING {} CORPUS".format(CORPORA.name))
+        print(LABEL , "USING {} METRIC".format(METRIC.name))
+        print(LABEL , "USING {} CORPUS".format(CORPORA.name))
+        if EVAL:
+            print(LABEL , "EVALUATING USING {0} SAMPLES and {1} LOOP(S)".format(SAMPLES, LOOPS))

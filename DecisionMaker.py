@@ -3,12 +3,16 @@ DecisionMaker: module for deciding potential answers
 
 Alex Berg and Nikki Kyllonen
 '''
+from __future__ import print_function
+
 import State
 import string, nltk, random
 
 from nltk.corpus import stopwords
 nltk.download("stopwords")
 
+from textwrap import wrap
+from terminaltables import AsciiTable
 
 ## GLOBAL VARIABLES ##
 punc = set(string.punctuation)
@@ -93,6 +97,11 @@ def evaluate_corpus(corpus, golden):
             result = list(check[0])
             result.append(clue)
             result.append(possibleWords[0][1])
+
+            # Calculate jaccard distance
+            d = float(possibleWords[0][1]) - float(result[1])
+            result.append(d)
+
             withinCorrectWords.append(result)
             if State.DEBUG:
                 print("[DEBUG]" , answer , "CORRECT" , result)
@@ -105,4 +114,85 @@ def evaluate_corpus(corpus, golden):
             if State.DEBUG:
                 print("[DEBUG]", answer , "INCORRECT")
 
-    return (withinCorrectWords, withinIncorrectWords, withoutNum)
+    return {"withinCor" : withinCorrectWords, "withinIncor" : withinIncorrectWords, "withoutN" : withoutNum}
+
+def run_evaluation(corpus, golden):
+    """ Generate tables containing evaluation data """
+    wordsTable, correctTable, statsTable = None, None, None
+
+    results = []
+    
+    for i in range(State.LOOPS):
+        results.append(evaluate_corpus(corpus, golden))
+    
+    if State.DEBUG:
+        # TODO: format this output with labels and a table?
+        print("[DEBUG]" , results)
+
+    # Initialize counters
+    percentCor, percentIncor, percentWithin = 0, 0, 0
+    distances, totalWithin, totalWithinCor = 0, 0, 0
+    for evalResult in results:
+        # Format output into tables
+        WORDS_DATA = (
+            ("Within Correct", "Within Incorrect", "Without Number"),
+            ("\n".join([ val[0] for val in evalResult["withinCor"] ]) ,
+             "\n".join(evalResult["withinIncor"]),
+             evalResult["withoutN"])
+        )
+        wordsTable = AsciiTable(WORDS_DATA, "Word Results")
+        # Only output word result tables if NOT looping --minimize output
+        if State.DEBUG or State.LOOPS == 1:
+            print("\n" + wordsTable.table)
+ 
+        MATCH_DATA = ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value", "Jaccard Distance")
+        data = []
+        correctTable = AsciiTable([MATCH_DATA, []])
+        maxValWidth = min(correctTable.column_max_width(2), 50)
+        maxHintWidth = min(correctTable.column_max_width(3), 50)
+        
+        for i in range(len(evalResult["withinCor"])):
+            r = list(evalResult["withinCor"][i])
+
+            # Format text to wrap
+            wrappedVal = '\n'.join(wrap(r[2], maxValWidth))
+            wrappedHint = '\n'.join(wrap(r[3], maxHintWidth))
+            r[2] = wrappedVal
+            r[3] = wrappedHint
+
+            if State.DEBUG:
+                print(r)
+
+            data.append(r)
+
+        correctTable = AsciiTable(tuple([MATCH_DATA] + data), "Correct Matches Results")
+        # Only output word result tables if NOT looping --minimize output
+        if State.DEBUG or State.LOOPS == 1:
+            print("\n" + correctTable.table)
+
+        # Check if we had any hits at all, otherwise output zeroes
+        if (State.SAMPLES != evalResult["withoutN"]):
+            withinN = State.SAMPLES - evalResult["withoutN"]
+            withinCor = len(evalResult["withinCor"])
+
+            percentCor += withinCor / withinN 
+            percentIncor += len(evalResult["withinIncor"]) / withinN
+            percentWithin += withinN / State.SAMPLES
+
+            # Sum the distances for each result from this loop to calc overal average
+            for word in evalResult["withinCor"]:
+                distances += word[5]
+            
+            totalWithin += withinN
+            totalWithinCor += withinCor
+
+    STATS_DATA = (
+        ("Average Percentage Within Correct" , "Average Percentage Within Incorrect", "Average Percentage Within", "Average Jaccard Distance"),
+        (percentCor / State.LOOPS,
+         percentIncor / State.LOOPS,
+         percentWithin / State.LOOPS,
+         distances / totalWithinCor if totalWithinCor > 0 else 0.0)
+    )
+
+    statsTable = AsciiTable(STATS_DATA, "Statistics")
+    print("\n" + statsTable.table)
