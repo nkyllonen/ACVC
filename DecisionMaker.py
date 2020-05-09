@@ -21,7 +21,8 @@ engStopWords = set(stopwords.words('english'))
 
 ## HELPER FUNCTIONS ##
 def clean_string(s):
-    """ Remove stopwords and all punctuation """
+    """ Remove double spaces, stopwords, and all punctuation """
+    s = s.replace("  " , " ")
     words = [ w for w in s.split(" ") if w not in engStopWords ]
     s = " ".join(words)
     return "".join( ch.lower() for ch in s if ch not in punc )
@@ -56,7 +57,7 @@ def use_jaccard_metric(corpus, wordLen, wordHint):
                     maxJaccardString = val
                     maxJaccard = m
             if maxJaccard > 0:
-                possible.append((word, maxJaccard, maxJaccardString, wordHint))
+                possible.append((word, maxJaccard, maxJaccardString))
     return possible
 
 
@@ -86,13 +87,15 @@ def evaluate_corpus(corpus, golden):
         print("[DEBUG] Using sample words:" , sampleWords)
 
     for answer in sampleWords:
-        possibleWords = get_possible_words(corpus, len(answer), random.choice(golden[answer]))
+        clue = random.choice(golden[answer])
+        possibleWords = get_possible_words(corpus, len(answer), clue)
 
         # Check if possible words contains correct answer
         check = list(filter( lambda x : x[0] == answer , possibleWords ))
         if len(check) > 0:
-            # Store corresponding result values + max jaccard of all results
+            # Store corresponding result values + golden hint + max jaccard of all results
             result = list(check[0])
+            result.append(clue)
             result.append(possibleWords[0][1])
 
             # Calculate jaccard distance

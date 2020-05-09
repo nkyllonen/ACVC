@@ -104,6 +104,6 @@ def processCommands(args):
     # Output current state
     if not BUILD_GOLD:
         print(LABEL , "USING {} METRIC".format(METRIC.name))
-        print(LABEL , "USING {} CORPORA".format(CORPORA.name))
+        print(LABEL , "USING {} CORPUS".format(CORPORA.name))
         if EVAL:
             print(LABEL , "EVALUATING USING {0} SAMPLES and {1} LOOP(S)".format(SAMPLES, LOOPS))
