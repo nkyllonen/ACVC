@@ -148,8 +148,10 @@ def run_evaluation(corpus, golden):
         MATCH_DATA = ("Word" , "Jaccard Value" , "Matching Corpus Value" , "Hint", "Max Jaccard Value", "Jaccard Distance")
         data = []
         correctTable = AsciiTable([MATCH_DATA, []])
-        maxValWidth = min(correctTable.column_max_width(2), 50)
-        maxHintWidth = min(correctTable.column_max_width(3), 50)
+
+        # Cap column widths at 35 chars for widest columns
+        maxValWidth = min(correctTable.column_max_width(2), 35)
+        maxHintWidth = min(correctTable.column_max_width(3), 35)
         
         for i in range(len(evalResult["withinCor"])):
             r = list(evalResult["withinCor"][i])
